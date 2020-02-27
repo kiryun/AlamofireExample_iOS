@@ -10,12 +10,39 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("Hello, World!")
+        List{
+            Button(action: self.login){
+                Text("Login")
+            }
+            Button(action: self.getArticles){
+                Text("Get Articles")
+            }
+        }
     }
+    
+    func login(){
+        APIClient.login(email: "test@gamil.com", password: "myPassword") { result in
+            switch result{
+            case .success(let user):
+                print(user)
+            case .failure(let error):
+                print("wimes's App Error")
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func getArticles(){
+        APIClient.getArticles { result in
+            switch result{
+            case .success(let articles):
+                print(articles)
+            case .failure(let error):
+                print("wimes's App Error")
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}

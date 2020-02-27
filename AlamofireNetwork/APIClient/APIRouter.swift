@@ -11,8 +11,10 @@ import Alamofire
 enum APIRouter: URLRequestConvertible {
     
     case login(email:String, password:String)
-    case posts
-    case post(id: Int)
+    case articles
+    case article(id: Int)
+//    case posts
+//    case post(id: Int)
     
     // MARK: - HTTPMethod
     private var method: HTTPMethod {

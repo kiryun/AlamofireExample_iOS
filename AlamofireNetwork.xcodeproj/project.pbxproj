@@ -3,11 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		1994E52A83986A374BBCD874 /* Pods_AlamofireNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E19BD89D271A07E875A24A4 /* Pods_AlamofireNetwork.framework */; };
+		8212DAC82407942F00EF8962 /* DateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8212DAC72407942F00EF8962 /* DateFormatter.swift */; };
 		82136CB324057A1100BBC1DE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82136CB224057A1100BBC1DE /* AppDelegate.swift */; };
 		82136CB524057A1100BBC1DE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82136CB424057A1100BBC1DE /* SceneDelegate.swift */; };
 		82136CB724057A1100BBC1DE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82136CB624057A1100BBC1DE /* ContentView.swift */; };
@@ -25,6 +26,7 @@
 
 /* Begin PBXFileReference section */
 		7E19BD89D271A07E875A24A4 /* Pods_AlamofireNetwork.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AlamofireNetwork.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8212DAC72407942F00EF8962 /* DateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatter.swift; sourceTree = "<group>"; };
 		82136CAF24057A1100BBC1DE /* AlamofireNetwork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlamofireNetwork.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82136CB224057A1100BBC1DE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		82136CB424057A1100BBC1DE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -70,7 +72,6 @@
 				E41E2EF9817A635EB845F310 /* Pods-AlamofireNetwork.debug.xcconfig */,
 				C40298842F311B97C05083EE /* Pods-AlamofireNetwork.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -123,6 +124,7 @@
 				82136CD024057AC200BBC1DE /* User.swift */,
 				82136CD224057AD700BBC1DE /* Article.swift */,
 				82136CD424057AEA00BBC1DE /* Category.swift */,
+				8212DAC72407942F00EF8962 /* DateFormatter.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -257,6 +259,7 @@
 				82136CCF24057AA800BBC1DE /* APIClient.swift in Sources */,
 				82136CD324057AD700BBC1DE /* Article.swift in Sources */,
 				82136CCD24057A9300BBC1DE /* APIRouter.swift in Sources */,
+				8212DAC82407942F00EF8962 /* DateFormatter.swift in Sources */,
 				82136CB524057A1100BBC1DE /* SceneDelegate.swift in Sources */,
 				82136CD124057AC200BBC1DE /* User.swift in Sources */,
 				82136CCB24057A7100BBC1DE /* UserEndpoint.swift in Sources */,
