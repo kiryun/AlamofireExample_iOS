@@ -339,7 +339,7 @@ class APIClient {
 `.responseDecodable(decoder: jsonDecoder){ (response: DataResponse<[Article], AFError>)`
 `responseRecodable` 메소드의 문서를 보겠습니다.
 
-![image-20200227151736278](/Users/gihyunkim/Documents/neowiz/wimes_docs/Alamofire_example.assets/image-20200227151736278.png)
+<img width="498" alt="image-20200227151736278" src="https://user-images.githubusercontent.com/40315820/75433828-f3964e80-5993-11ea-8fa0-4e38a820bdb4.png">
 
 문서를 보면 기본 매개변수가 있는 2개의 매개변수 queue와 디코더가 있음을 알기 때문에 첫번째 로그인 요청에서 completionHandler인 responseDecodable을 호출할 때 하나의 매개변수를 전달한 것입니다.
 
