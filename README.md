@@ -436,12 +436,6 @@ class APIClient {
 APIRouter 및 completion 파라미터를 전달할 때 request를 수행하는 `performRequest` 라는  메소드를 작성했습니다. 
 
 
-
-## Reference
-
-* https://medium.com/@AladinWay/write-a-networking-layer-in-swift-4-using-alamofire-and-codable-part-1-api-router-349699a47569
-
-
 ## Callback Hell & PromisedFuture
 
 우리의 로직은 다음과 같습니다.
@@ -599,3 +593,8 @@ struct ContentView: View {
     그럻지 않다면 failure를 받게 됩니다.
 
 7. 이 후 차례로 원하는 값을 받게 되고 최종적으로 success 와 failure를 받습니다.
+
+## Reference
+
+* https://medium.com/@AladinWay/write-a-networking-layer-in-swift-4-using-alamofire-and-codable-part-1-api-router-349699a47569
+
