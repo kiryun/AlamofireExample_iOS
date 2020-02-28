@@ -11,7 +11,7 @@ import Alamofire
 enum APIRouter: URLRequestConvertible {
     
     case login(email:String, password:String)
-    case articles
+    case articles(userId: Int)
     case article(id: Int)
 //    case posts
 //    case post(id: Int)
@@ -21,7 +21,7 @@ enum APIRouter: URLRequestConvertible {
         switch self {
         case .login:
             return .post
-        case .posts, .post:
+        case .articles, .article:
             return .get
         }
     }
@@ -31,9 +31,9 @@ enum APIRouter: URLRequestConvertible {
         switch self {
         case .login:
             return "/login"
-        case .posts:
-            return "/posts"
-        case .post(let id):
+        case .articles(let userId):
+            return "/articles/all.json?userId=\(userId)"
+        case .article(let id):
             return "/posts/\(id)"
         }
     }
@@ -43,7 +43,7 @@ enum APIRouter: URLRequestConvertible {
         switch self {
         case .login(let email, let password):
             return [K.APIParameterKey.email: email, K.APIParameterKey.password: password]
-        case .posts, .post:
+        case .articles, .article:
             return nil
         }
     }

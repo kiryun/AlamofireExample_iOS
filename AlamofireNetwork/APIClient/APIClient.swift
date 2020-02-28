@@ -8,31 +8,38 @@
 
 import Foundation
 import Alamofire
+import PromisedFuture
 
 class APIClient {
     @discardableResult
-    private static func performRequest<T: Decodable>(route: APIRouter, decoder: JSONDecoder = JSONDecoder(), completion: @escaping (Result<T, AFError>) -> Void) -> DataRequest{
-        return AF.request(route)
-            .responseDecodable(decoder: decoder){ (response: DataResponse<T, AFError>) in
-                completion(response.result)
+    private static func performRequest<T: Decodable>(route: APIRouter, decoder: JSONDecoder = JSONDecoder()) -> Future<T>{
+        return Future { completion in
+            AF.request(route)
+                .responseDecodable(decoder: decoder, completionHandler: { (response: DataResponse<T, AFError>) in
+                    switch response.result{
+                    case .success(let value):
+                        completion(.success(value))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                })
         }
     }
     
-    static func login(email: String, password: String, completion:@escaping (Result<User, AFError>)->Void) {
-        AF.request(APIRouter.login(email: email, password: password))
-                 .responseDecodable { (response: DataResponse<User, AFError>) in
-                    completion(response.result)
-        }
+    static func login(email: String, password: String) -> Future<User> {
+        return self.performRequest(route: APIRouter.login(email: email, password: password))
     }
     
-    static func getArticles(completion: @escaping (Result<[Article], AFError>) -> Void){
+    static func userArticles(userId: Int) -> Future<[Article]> {
+        let jsonDecoder = JSONDecoder()
+        jsonDecoder.dateDecodingStrategy = .formatted(.articleDateFormatter)
+        return performRequest(route: APIRouter.articles(userId: userId), decoder: jsonDecoder)
+    }
+    
+    static func getArticles(articleId: Int) -> Future<Article>{
         let jsonDecoder = JSONDecoder()
         jsonDecoder.dateDecodingStrategy = .formatted(DateFormatter.articleDateFormatter)
         
-        AF.request(APIRouter.articles)
-            .responseDecodable(decoder: jsonDecoder){ (response: DataResponse<[Article], AFError>) in
-                completion(response.result)
-        }
+        return performRequest(route: APIRouter.article(id: articleId), decoder: jsonDecoder)
     }
-    
 }
