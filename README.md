@@ -441,3 +441,161 @@ APIRouter 및 completion 파라미터를 전달할 때 request를 수행하는 `
 
 * https://medium.com/@AladinWay/write-a-networking-layer-in-swift-4-using-alamofire-and-codable-part-1-api-router-349699a47569
 
+
+## Callback Hell & PromisedFuture
+
+우리의 로직은 다음과 같습니다.
+
+1. 로그인
+2. user의 article리스트들을 모두 받습니다.
+3. article의 자세한 내용들을 받습니다.
+
+이과정을 구현을 하려면 다음과 같이 구현하면됩니다.
+
+```swift
+func badLogic(){
+        APIClient.login(email: "test@gmail.com", password: "myPassword", completion: { result in
+            switch result {
+            case .success(let user):
+                APIClient.userArticles(userID: user.id, completion: { result in
+                    switch result {
+                    case .success(let articles):
+                        APIClient.getArticles(id: articles.last!.id, completion: { result in
+                            switch result {
+                            case .success(let article):
+                                print(article)
+                            case .failure(let error):
+                                print(error)
+                            }
+                        })
+                    case .failure(let error):
+                        print(error)
+                    }
+                })
+            case .failure(let error):
+                print(error)
+            }
+        })
+    }
+```
+
+우리는 이처럼 콜백안에 콜백 안에 콜백 안에 콜백 ... 이러한 것들을 콜백 헬이라고 부릅니다. 콜백헬은 가독성을 저하할 뿐 아니라 유지보수가 어렵다는 단점을 가지고 있습니다.
+따라서 우리는 Swift 서드파티 라이브러리 중에 [PromisedFuture](https://github.com/AladinWay/PromisedFuture)를 사용할 것입니다. 
+
+PromisedFuture 라이브러리는 매우 가벼운 라이브러리(약 50줄의 코드)이며 매우 간단한 promisesd 패턴을 구현할 수 있습니다.
+
+우선 이전에 APIClient에 만들었던 `performRequest` 를 활용하는 것을 시작하도록 하겠습니다.
+
+**APIClient.swift**
+
+```swift
+import Foundation
+import Alamofire
+import PromisedFuture
+
+class APIClient {
+    @discardableResult
+    private static func performRequest<T: Decodable>(route: APIRouter, decoder: JSONDecoder = JSONDecoder()) -> Future<T>{
+        return Future { completion in
+            AF.request(route)
+                .responseDecodable(decoder: decoder, completionHandler: { (response: DataResponse<T, AFError>) in
+                    switch response.result{
+                    case .success(let value):
+                        completion(.success(value))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                })
+        }
+    }
+    
+    static func login(email: String, password: String) -> Future<User> {
+        return self.performRequest(route: APIRouter.login(email: email, password: password))
+    }
+    
+    static func userArticles(userId: Int) -> Future<[Article]> {
+        let jsonDecoder = JSONDecoder()
+        jsonDecoder.dateDecodingStrategy = .formatted(.articleDateFormatter)
+        return performRequest(route: APIRouter.articles(userId: userId), decoder: jsonDecoder)
+    }
+    
+    static func getArticles(articleId: Int) -> Future<Article>{
+        let jsonDecoder = JSONDecoder()
+        jsonDecoder.dateDecodingStrategy = .formatted(DateFormatter.articleDateFormatter)
+        
+        return performRequest(route: APIRouter.article(id: articleId), decoder: jsonDecoder)
+    }
+}
+```
+
+실제 사용은 아래와 같습니다.
+
+**ContentView.swift**
+
+```swift
+import SwiftUI
+
+struct ContentView: View {
+    var body: some View {
+        List{
+            Button(action: self.logic){
+                Text("Login-GetArticles")
+            }
+        }
+    }
+    
+    func logic(){
+        APIClient.login(email: "test@gamil.com", password: "myPassword")
+            .map({$0.id})
+            .andThen(APIClient.userArticles)
+            .map({$0.last!.id})
+            .andThen(APIClient.getArticles)
+            .execute(onSuccess: { article in
+                print(article)
+            }, onFailure:{ error in
+                print(error)
+            })
+    }
+}
+```
+
+이제 하나하나 분석을 해보면 
+
+1. APIClient의 `login(email:password:)` 메서드를 호출하는 것부터 시작합니다.
+
+2. login 메서드는 `performRequest` 호출하고 `APIRouter.login()` 을 파라미터로 전달합니다.
+
+3. performRequest는 `Future` 인스턴스를 리턴합니다.
+
+4. Futrue 인스턴스를 생성하는데 다음과 같은 형태의 인스턴스를 생성합니다.
+
+   `Future(operation: <T(@escaping (Result<_>) -> Void) -> Void>)`
+   여기서
+
+   `operation` 파라미터는
+
+   ```swift
+   { completion in
+    	AF.request(route)
+    	.responseDecodable(decoder: decoder, completionHandler: { (response: DataResponse<T, AFError>) in
+   	switch response.result{
+     case .success(let value):
+     	completion(.success(value))
+     case .failure(let error):
+     	completion(.failure(error))
+      }
+      })
+   }
+   ```
+
+   가 할당받게 됩니다.
+
+5. 이렇게 login 메서드 호출이 끝나고 리턴 받은 값을 map 을 이용해 id들을 추출합니다.
+
+   `.map($0.id)`
+
+6. 만약 제대로 값을 받았다면 `andThen()`메서드에 `APIClient.userArticles` 메서드를 파라미터로 넘겨줍니다.
+
+    그럻지 않다면 failure를 받게 됩니다.
+
+7. 이 후 차례로 원하는 값을 받게 되고 최종적으로 success 와 failure를 받습니다.
